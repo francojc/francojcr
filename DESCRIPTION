@@ -1,0 +1,15 @@
+Package: francojcr
+Title: Personal R Package of Jerid Francom
+Version: 0.0.0.92
+Authors@R: person("Jerid", "Francom", email = "francojc@wfu.edu", role = c("aut", "cre"))
+Description: This package contains various functions and other code
+  I have written to facilitate my workflow.
+Depends: R (>= 3.4.2)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: tools
+RoxygenNote: 6.0.1.9000
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

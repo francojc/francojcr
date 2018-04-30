@@ -1,0 +1,41 @@
+---
+title: "Introduction to acquiring data"
+author: "Jerid Francom"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Acquiring data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Acquiring language data from the web takes various strategies. The formats vary. Sometimes the data is stored in a compressed `.zip` file. Sometimes it can be accessed via API through R packages, and sometimes the data needs to be scraped from the web. This introduction provides and overview of the `francojcr` package functions for acquiring data from these three sources.
+
+## Download and extract compressed files
+
+To acquire language data from a `.zip`, `.tar`, `.gz`, or `.tar.gz` on the web we use the `get_compress_data()` function. It takes three arguments `url`, `target_dir`, and `force`. The `url` is where the specific web address is added and the `target_dir` is where you want the contents of the compressed file to be extracted. `force` is can be used to force download the data again. It defaults to `FALSE`.
+
+```{r get-compressed-data-ex-1, eval = FALSE}
+get_compressed_data(url = "<address to .zip file>", 
+                    target_dir = "<path to directory>")
+```
+
+The `get_compressed_data()` function creates a temporary file to store the compressed file download and then the data is extracted to the `target_dir`. If the path does not exist, it will be created to avoid R throwing an error. 
+
+If the data already exists, then the function will not re-download the data unless `force = TRUE`.
+
+```{r get-compressed-data-ex-2, eval = FALSE}
+get_compressed_data(url = "<address to .zip file>", 
+                    target_dir = "<path to directory>", 
+                    force = TRUE)
+```
+
+
+## 

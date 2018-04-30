@@ -1,0 +1,85 @@
+---
+title: "Loading `udpipe` dependency models for NLP annotation"
+author: "Jerid Francom"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Loading `udpipe` dependency models for NLP annotation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The `udpipe` package provides access to numerous language annotation models. The `cleanNLP` package can be used with `udpipe` as the backend. With either package, it is necessary to download the model and once downloaded access the model file for use in annotation. The `cleanNLP` package organizes the language models within the `cleanNLP` library directory, which is more efficient than deciding where to store model files on a per-project basis. Therefore, I have created a function `get_udpipe_model_path()` to find a downloaded language model. In the case that the model is not found, `cleanNLP` is used to download the file and then the file path to this download is returned.
+
+## Case 1: working with `udpipe`
+
+In this case it is assumed that the user wants to annotate text with the `udpipe` package. First, load the package.
+
+```{r load-udpipe}
+pacman::p_load(udpipe, francojcr)
+```
+
+Next, search for the language-specific file. In this example, Spanish. 
+
+```{r model-file-search-udpipe}
+spanish_model_path <- get_udpipe_model_path("spanish")
+```
+
+If the model is not found, it will download the language model file through the `cleanNLP::cnlp_download_udpipe()` function. The default location for the download will be the `cleanNLP` package directory. 
+
+Next, in `udpipe` we need to load the model and store it as an object.
+
+```{r udpipe-load-model}
+spanish_model <- udpipe_load_model(spanish_model_path)
+```
+
+Then we can proceed to annotate some text. 
+
+```{r udpipe-annotate}
+text <- c("La mejor salsa es el hambre.")
+text_anno <- udpipe_annotate(object = spanish_model, x = text)
+as.data.frame(text_anno)
+```
+
+## Case 2: working with `cleanNLP`
+
+There are advantages with working with `cleanNLP` over `udpipe` and vice versa. One nice aspect of `cleanNLP` is that the annotations are structured in a way that facilitates working with tidy text. Since we are working with `cleanNLP` we'll load the package.
+
+```{r load-cleanNLP}
+pacman::p_load(cleanNLP, francojcr)
+```
+
+Again, search for the language-specific file. In this example, English. 
+
+```{r model-file-search-cleanNLP}
+english_model_path <- get_udpipe_model_path("english")
+```
+
+Next we need to initialize the annotation model. Using the path retrieved by `get_udpipe_model_path()` we specify the `model_path` argument with the path object. 
+
+```{r init-model}
+cnlp_init_udpipe(model_path = english_model_path)
+```
+
+Once we have the model initiated `cleanNLP` will assume that we are using that model to do the annotations. You can apply the model to text data either as a vector of files to parse, a character vector with each element corresponding to a sentence, or a data frame. In this example, we will apply it to a toy character vector.
+
+```{r cleanNLP-annotate}
+text <- c("I'm hungry as a bear.")
+text_anno <- cnlp_annotate(text, as_strings = TRUE)
+```
+
+`cleanNLP` has a number of helper functions to retrieve different parts of the annotation: document, token, and syntactic information. The `cnlp_get_tif()` function pulls information from both token and syntactic information tables.
+
+```{r cleanNLP-retrieve-info}
+cnlp_get_tif(text_anno)
+```
+
+The annotation information, specifically for the features, is easier to work with in `cleanNLP`. However, there are a number of convenient functions which make `udpipe` a very powerful package for creating annotations and working with them. 
+
