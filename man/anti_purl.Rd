@@ -19,6 +19,6 @@ This function extracts the prose from a file and optionally copies it to the cli
 }
 \examples{
 \dontrun{
-anti_purl("/path/to/file.R", clip = TRUE)
+anti_purl("/path/to/file.Rmd", clip = TRUE)
 }
 }
