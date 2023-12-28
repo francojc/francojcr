@@ -1,15 +1,17 @@
 Package: francojcr
 Title: Personal R Package of Jerid Francom
-Version: 0.0.0.92
+Version: 0.0.1
 Authors@R: person("Jerid", "Francom", email = "francojc@wfu.edu", role = c("aut", "cre"))
 Description: This package contains various functions and other code
   I have written to facilitate my workflow.
-Depends: R (>= 3.4.2)
-License: MIT + file LICENSE
+Depends: R (>= 4.0.0)
+License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
-Imports: tools
-RoxygenNote: 6.0.1.9000
+Imports:
+    clipr,
+    stringr
+RoxygenNote: 7.2.3
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
