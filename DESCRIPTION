@@ -1,6 +1,6 @@
 Package: francojcr
 Title: Personal R Package of Jerid Francom
-Version: 0.0.1
+Version: 0.9.0
 Authors@R: person("Jerid", "Francom", email = "francojc@wfu.edu", role = c("aut", "cre"))
 Description: This package contains various functions and other code
   I have written to facilitate my workflow.
@@ -20,6 +20,6 @@ Imports:
     wordcountaddin,
     yaml
 RoxygenNote: 7.2.3
-Suggests: 
+Suggests:
     rmarkdown
 VignetteBuilder: knitr
