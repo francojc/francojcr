@@ -18,66 +18,56 @@
 #' }
 #'
 #' @importFrom yaml yaml.load_file
-#' @importFrom fs path_ext_remove
 #' @importFrom wordcountaddin word_count
-#' @importFrom purrr map_dfr
-#' @importFrom dplyr summarize
 #' @importFrom knitr kable
-#' @importFrom tibble tibble
 #'
 #' @export
-
-# Function to count the number of words in files in a quarto book project
 book_length <- function(quarto_yml_path = "_quarto.yml", words_per_minute = 200) {
-
   # Read the _quarto.yml file
   yml_file <- yaml::yaml.load_file(input = quarto_yml_path)
 
-  chapters_vec <-
-    yml_file$book$chapters |>
-    unlist() |>
-    as.character()
+  chapters_vec <- unlist(yml_file$book$chapters)
 
-  get_chapter_info <- function(chapter) {
-    # Get the chapter name
-    chapter_name <- fs::path_ext_remove(chapter)
+  # Initialize vectors to store chapter information
+  chapters_names <- vector("character", length(chapters_vec))
+  word_counts <- numeric(length(chapters_vec))
+  read_times <- numeric(length(chapters_vec))
+
+  # Loop through each chapter to get information
+  for (i in seq_along(chapters_vec)) {
+    chapter <- chapters_vec[i]
+    # Get the chapter name without extension
+    chapters_names[i] <- tools::file_path_sans_ext(basename(chapter))
     # Get the chapter word count
-    chapter_wc <- wordcountaddin::word_count(filename = chapter)
-    chapter_time <-
-      chapter_wc / words_per_minute |> # Divide by specified words per minute
-        as.numeric() |> # Convert to numeric
-        round(digits = 1) # Round to 1 decimal place
-    # Combine the results into a tibble
-    chapter_info <-
-      tibble::tibble(
-        chapter = chapter_name,
-        word_count = chapter_wc,
-        read_time_mins = chapter_time
-      )
-    # Return the results
-    return(chapter_info)
+    word_counts[i] <- wordcountaddin::word_count(filename = chapter)
+    # Calculate the chapter read time and round it
+    read_times[i] <- round(word_counts[i] / words_per_minute, 1)
   }
 
-  chapters_tbl <-
-    purrr::map_dfr(chapters_vec, get_chapter_info)
+  # Create a data frame with all chapter information
+  chapters_tbl <- data.frame(
+    chapter = chapters_names,
+    word_count = word_counts,
+    read_time_mins = read_times
+  )
+
+  # Calculate book summary statistics
+  total_words <- sum(word_counts)
+  avg_read_mins <- round(mean(read_times), 1)
+  total_read_hours <- round(sum(read_times) / 60, 1)
+
+  # Create a data frame for book summary
+  book_summary <- data.frame(
+    total_words = total_words,
+    avg_read_mins = avg_read_mins,
+    total_read_hours = total_read_hours
+  )
 
   # Print the book summary
   message("\nBook summary: ")
-  book_summary <- chapters_tbl |>
-    dplyr::summarise(
-      total_words = sum(word_count),
-      avg_read_mins = round(mean(read_time_mins), 1),
-      total_read_hours = round(sum(read_time_mins) / 60, 1)
-    ) |>
-    knitr::kable(format.args = list(big.mark = ","))
-
-  print(book_summary)
+  print(knitr::kable(book_summary, format.args = list(big.mark = ",")))
 
   # Print the chapter info
   message("\nChapter info: ")
-
-  chapter_info_table <- chapters_tbl |>
-    knitr::kable(format.args = list(big.mark = ",", digits = 1))
-
-  print(chapter_info_table)
+  print(knitr::kable(chapters_tbl, digits = 1, format.args = list(big.mark = ",")))
 }
