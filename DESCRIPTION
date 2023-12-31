@@ -1,6 +1,6 @@
 Package: francojcr
 Title: Personal R Package of Jerid Francom
-Version: 0.9.0
+Version: 0.9.1
 Authors@R: person("Jerid", "Francom", email = "francojc@wfu.edu", role = c("aut", "cre"))
 Description: This package contains various functions and other code
   I have written to facilitate my workflow.
